@@ -1,0 +1,17 @@
+body {
+    margin: 0; padding: 0;
+    overflow: hidden;
+    min-width: 700px;
+    background: #3b7ddb;
+}
+
+h1#title {
+    text-indent: -900em;
+    width: 489px;
+    height: 424px;
+    background: url(logo.png) no-repeat bottom;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    margin: -245px 0 0 -228px;
+}
