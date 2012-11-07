@@ -20,15 +20,19 @@
     String.prototype.beginsWith = function (prefix) {
         return this.substring(0, prefix.length) === prefix;
     };
+    var flag = false;
     for (var i in prefixes) {
         var prefix = prefixes[i];
         if (ref.beginsWith(prefix)) {
             act = prefix + act;
             f.action = act;
             f.submit();
+            flag = true;
+            break;
         }
     }
-    window.location = prefixes[0];
+    if (!flag)
+        window.location = prefixes[0];
 </script>
 </body>
 </html>
