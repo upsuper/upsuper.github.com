@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>RTF to Plain Text</title>
+  <style type="text/css">
+    textarea, button {
+      max-width: 800px;
+      width: 95%;
+      display: block;
+      margin: 0 auto 10px;
+    }
+    textarea {
+      height: 15em;
+    }
+  </style>
+  <script type="text/javascript">
+    function $(id) { return document.getElementById(id); }
+
+    var tokenizer = /\\([a-z]+)(-?\d+)? ?|\\([^a-z])|[{}]|[^\\{}\n]+/igm;
+    function convert(text) {
+      var stack = [];
+      var state = {};
+      var result = '';
+
+      function appendText(text) {
+        if (!state.ignore)
+          result += text;
+      }
+
+      var match;
+      while ((match = tokenizer.exec(text)) !== null) {
+        if (match[0] == '{') {
+          var oldState = state;
+          state = {};
+          state.prototype = oldState;
+          stack.push(oldState);
+        } else if (match[0] == '}') {
+          state = stack.pop();
+        } else if (match[0][0] == '\\') {
+          if (match[1]) {
+            switch (match[1]) {
+              case 'u':
+                appendText(String.fromCharCode(parseInt(match[2])));
+                break;
+              case 'fonttbl':
+              case 'filetbl':
+              case 'colortbl':
+              case 'stylesheet':
+                state.ignore = true;
+                break;
+            }
+          } else if (match[3]) {
+            switch (match[3]) {
+              case '*':
+                state.ignore = true;
+                break;
+              case '{': case '}':
+              case '\\': case '\n':
+                appendText(match[3]);
+                break;
+            }
+          }
+        } else {
+          appendText(match[0]);
+        }
+      }
+
+      return result;
+    }
+
+    window.onload = function () {
+      $('rtf').focus();
+      $('convert').onclick = function () {
+        var result = convert($('rtf').value);
+        $('text').value = result;
+        $('text').focus();
+        $('text').setSelectionRange(0, result.length);
+      };
+    };
+  </script>
+</head>
+<body>
+  <textarea id="rtf"></textarea>
+  <button id="convert">Convert</button>
+  <textarea id="text"></textarea>
+</body>
+</html>
